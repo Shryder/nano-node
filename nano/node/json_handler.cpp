@@ -8,6 +8,7 @@
 #include <nano/node/node.hpp>
 #include <nano/node/node_rpc_config.hpp>
 #include <nano/node/telemetry.hpp>
+#include <nano/node/rpc_v3.hpp>
 
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
@@ -5246,6 +5247,16 @@ void nano::inprocess_rpc_handler::process_request_v2 (rpc_handler_request_params
 	std::string body_l = params_a.json_envelope (body_a);
 	auto handler (std::make_shared<nano::ipc::flatbuffers_handler> (node, ipc_server, nullptr, node.config.ipc_config));
 	handler->process_json (reinterpret_cast<uint8_t const *> (body_l.data ()), body_l.size (), response_a);
+}
+
+void nano::inprocess_rpc_handler::process_request_v3 (std::string const & body_a, std::function<void (std::string const &)> response_a)
+{
+	// Note that if the rpc action is async, the shared_ptr<json_handler> lifetime will be extended by the action handler
+	auto handler (std::make_shared<nano::rpc_v3> (node, node_rpc_config, body_a, response_a, [this] () {
+		this->stop_callback ();
+		this->stop ();
+	}));
+	handler->process_request ();
 }
 
 namespace

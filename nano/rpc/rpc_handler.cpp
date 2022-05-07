@@ -126,6 +126,10 @@ void nano::rpc_handler::process_request (nano::rpc_handler_request_params const 
 					response (body_l);
 				});
 			}
+			else if (request_params.rpc_version == 3)
+			{
+				rpc_handler_interface.process_request_v3 (body, this->response);
+			}
 			else
 			{
 				debug_assert (false);

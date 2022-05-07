@@ -60,6 +60,7 @@ public:
 	virtual void process_request (std::string const & action, std::string const & body, std::function<void (std::string const &)> response) = 0;
 	/** Process RPC 2.0 request. This is called via the IPC API */
 	virtual void process_request_v2 (rpc_handler_request_params const & params_a, std::string const & body, std::function<void (std::shared_ptr<std::string> const &)> response) = 0;
+	virtual void process_request_v3 (std::string const & body, std::function<void (std::string const &)> response) = 0;
 	virtual void stop () = 0;
 	virtual void rpc_instance (nano::rpc & rpc) = 0;
 };

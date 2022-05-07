@@ -96,6 +96,11 @@ public:
 		}));
 	}
 
+	void process_request_v3 (std::string const & body_a, std::function<void (std::string const &)> response_a) override
+	{
+		rpc_request_processor.add (std::make_shared<nano::rpc_request> (3, body_a, response_a));
+	}
+
 	void stop () override
 	{
 		rpc_request_processor.stop ();

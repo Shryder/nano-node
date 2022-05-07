@@ -131,8 +131,19 @@ void nano::rpc_connection::parse_request (STREAM_TYPE & stream, std::shared_ptr<
 					}
 				});
 
-				std::string api_path_l = "/api/v2";
-				int rpc_version_l = boost::starts_with (path_l, api_path_l) ? 2 : 1;
+				int rpc_version_l = 1;
+				std::string url_l = path_l;
+
+				if (boost::starts_with (path_l, "/api/v2"))
+				{
+					rpc_version_l = 2;
+					url_l = boost::algorithm::erase_first_copy (path_l, "/api/v2");
+				}
+				else if (boost::starts_with (path_l, "/api/v3"))
+				{
+					rpc_version_l = 3;
+					url_l = boost::algorithm::erase_first_copy (path_l, "/api/v3");
+				}
 
 				auto method = req.method ();
 				switch (method)
@@ -144,8 +155,7 @@ void nano::rpc_connection::parse_request (STREAM_TYPE & stream, std::shared_ptr<
 						request_params.rpc_version = rpc_version_l;
 						request_params.credentials = header_field_credentials_l.to_string ();
 						request_params.correlation_id = header_corr_id_l.to_string ();
-						request_params.path = boost::algorithm::erase_first_copy (path_l, api_path_l);
-						request_params.path = boost::algorithm::erase_first_copy (request_params.path, "/");
+						request_params.path = boost::algorithm::erase_first_copy (url_l, "/");
 						handler->process_request (request_params);
 						break;
 					}

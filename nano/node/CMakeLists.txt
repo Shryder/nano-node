@@ -80,6 +80,8 @@ add_library(
   ipc/ipc_server.cpp
   json_handler.hpp
   json_handler.cpp
+  rpc_v3.hpp
+  rpc_v3.cpp
   ledger_walker.hpp
   ledger_walker.cpp
   lmdb/account_store.hpp
