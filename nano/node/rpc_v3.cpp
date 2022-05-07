@@ -12,9 +12,6 @@
 
 #include <boost/json.hpp>
 
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/property_tree/ptree.hpp>
-
 #include <algorithm>
 #include <chrono>
 
@@ -79,7 +76,6 @@ nano::account nano::rpc_v3::get_account_parameter (std::string const & field = "
 		throw ApiError{ int(API_EC::MISSING_REQUIRED_FIELD), "Account field is required" };
 	}
 
-	std::cout << "Account:" << account_text << std::endl;
 	nano::account result (0);
 	if (!result.decode_account (account_text.c_str ()))
 	{
