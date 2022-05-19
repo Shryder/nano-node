@@ -57,7 +57,7 @@ public:
 	boost::json::value account_balance ();
 
 	std::string body;
-	json body_json;
+	boost::json::object body_json;
 
 	nano::node & node;
 	boost::property_tree::ptree request;

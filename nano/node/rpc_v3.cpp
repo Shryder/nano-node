@@ -64,6 +64,11 @@ void nano::rpc_v3::respond_error (boost::json::value & error_data)
 
 nano::account nano::rpc_v3::get_account_parameter (std::string const & field = "account")
 {
+	if (!body_json.contains (field))
+	{
+		throw ApiError{ int (API_EC::INVALID_INPUT), field + " field is required" };
+	}
+
 	auto account_field = body_json.at (field);
 	if (!account_field.is_string ())
 	{
@@ -98,20 +103,30 @@ boost::json::value nano::rpc_v3::account_balance ()
 
 boost::json::value nano::rpc_v3::handle_action ()
 {
-	auto action = body_json.at ("action").as_string ();
+	if (!body_json.contains ("action"))
+	{
+		throw ApiError { int (API_EC::INVALID_INPUT), "Action field is required" };
+	}
 
-	if (action == "account_balance")
+	auto action = body_json.at ("action");
+	if (!action.is_string ())
+	{
+		throw ApiError { int (API_EC::INVALID_INPUT), "Action must be a string" };
+	}
+
+	auto action_str = action.as_string ();
+	if (action_str == "account_balance")
 	{
 		return account_balance ();
 	}
 
-	throw ApiError{ int(API_EC::UNSUPPORTED_ACTION), "Action is not supported" };
+	throw ApiError { int(API_EC::UNSUPPORTED_ACTION), "Action is not supported" };
 }
 
 void nano::rpc_v3::process_request (bool unsafe_a)
 {
 	boost::system::error_code ec;
-	body_json = boost::json::parse (body, ec);
+	body_json = boost::json::parse (body, ec).as_object ();
 	if (ec)
 	{
 		return this->respond_error (this->prepare_error ({ int(API_EC::INVALID_INPUT), "Failed parsing JSON" }));
